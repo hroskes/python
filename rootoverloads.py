@@ -10,20 +10,22 @@ def definegetattr(cls, functionname, condition = bool):
         raise AttributeError("'{}' object has no attribute '{}'".format(type(self).__name__, attr))
     cls.__getattr__ = __getattr__
 
-def definegetitem(cls, getlistfunctionname, getitem=True, iter=True, len_=True):
+def definegetitem(cls, getlistfunctionname, getitem=True, iter=True, len_=True, furtheraction=None):
     assert hasattr(cls, getlistfunctionname)
+
+    if furtheraction is None: furtheraction = lambda x: x
 
     if getitem:
         assert not hasattr(cls, "__getitem__")
         def __getitem__(self, item):
-            return getattr(self, getlistfunctionname)()[item]
+            return furtheraction(getattr(self, getlistfunctionname)()[item])
         cls.__getitem__ = __getitem__
 
     if iter:
         assert not hasattr(cls, "__iter__")
         def __iter__(self):
             for entry in getattr(self, getlistfunctionname)():
-                yield entry
+                yield furtheraction(entry)
         cls.__iter__ = __iter__
 
     if len_:
@@ -37,3 +39,4 @@ definegetattr(ROOT.RooWorkspace, "obj")
 
 definegetitem(ROOT.TCanvas, "GetListOfPrimitives")
 definegetitem(ROOT.THStack, "GetHists")
+definegetitem(ROOT.TDirectory, "GetListOfKeys", furtheraction=lambda x: x.ReadObj())
