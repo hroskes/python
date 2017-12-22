@@ -15,21 +15,18 @@ def definegetitem(cls, getlistfunctionname, getitem=True, iter=True, len_=True, 
 
     if furtheraction is None: furtheraction = lambda x: x
 
-    if getitem:
-        assert not hasattr(cls, "__getitem__")
+    if getitem and not hasattr(cls, "__getitem__"):
         def __getitem__(self, item):
             return furtheraction(getattr(self, getlistfunctionname)()[item])
         cls.__getitem__ = __getitem__
 
-    if iter:
-        assert not hasattr(cls, "__iter__")
+    if iter and not hasattr(cls, "__iter__"):
         def __iter__(self):
             for entry in getattr(self, getlistfunctionname)():
                 yield furtheraction(entry)
         cls.__iter__ = __iter__
 
-    if len_:
-        assert not hasattr(cls, "__len__")
+    if len_ and not hasattr(cls, "__len__"):
         def __len__(self):
             return len(getattr(self, getlistfunctionname)())
         cls.__len__ = __len__
