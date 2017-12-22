@@ -44,14 +44,23 @@ definegetitem(ROOT.TDirectory, "GetListOfKeys", furtheraction=lambda x: x.ReadOb
 import getpass, socket
 if ("login-node" in socket.gethostname() or "compute" in socket.gethostname() or "bigmem" in socket.gethostname()) and getpass.getuser():
     class __PlotCopier(object):
-        import os, subprocess
+        import os, pipes, subprocess, tempfile
         def __init__(self):
             self.__tmpdir = None
 
         def __del__(self):
             if self.__tmpdir is not None:
-                import os, subprocess
-                subprocess.check_call(["rsync", "-azvP", os.path.join(self.tmpdir, "www", ""), "hroskes@lxplus.cern.ch:www/"])
+                import os, pipes, subprocess
+                command = ["rsync", "-azvP", os.path.join(self.tmpdir, "www", ""), "hroskes@lxplus.cern.ch:www/"]
+                try:
+                    subprocess.check_call(command)
+                except:
+                    print
+                    print "Failed to copy plots.  To do it yourself, try:"
+                    print
+                    print " ".join(pipes.quote(_) for _ in command)
+                    print
+                    raise
 
         @property
         def tmpdir(self):
