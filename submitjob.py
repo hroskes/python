@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import getpass
 import os
 from pipes import quote
 import re
@@ -9,9 +10,12 @@ import textwrap
 
 from Alignment.OfflineValidation.TkAlAllInOneTool.helperFunctions import replaceByMap
 
-import config
+email = "heshyr@gmail.com"
+if getpass.getuser() == "hroskes": host = "lxplus"
+elif getpass.getuser() == "jroskes1@jhu.edu": host = "MARCC"
+else: raise ValueError(getpass.getuser())
 
-if config.host == "lxplus":
+if host == "lxplus":
     def submitjob(jobtext, jobname=None, jobtime=None, queue=None, interactive=False, waitids=[], waitsuccessids=[], outputfile=None, errorfile=None, docd=False, morerepmap=None, email=True):
         if not email: raise RuntimeError("Not sure how to turn off email for lxplus")
         if outputfile is not None:
@@ -66,7 +70,7 @@ if config.host == "lxplus":
             print bsubout,
             return jobid
 
-elif config.host == "MARCC":
+elif host == "MARCC":
     def submitjob(jobtext, jobname=None, jobtime=None, queue=None, interactive=False, waitids=[], outputfile=None, errorfile=None, docd=False, morerepmap=None, email=False, memory="3000M"):
         if queue is None:
             queue = "shared"
@@ -114,7 +118,7 @@ elif config.host == "MARCC":
         if waitids:
             options["--dependency"] = "afterany:.oO[waitids]Oo."
         if email:
-            options["--mail-user"] = config.email
+            options["--mail-user"] = email
             options["--mail-type"] = "end"
 
         options = {replaceByMap(k, repmap): replaceByMap(v, repmap) for k, v in options.iteritems() if v is not None}
