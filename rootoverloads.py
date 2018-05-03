@@ -39,7 +39,7 @@ definegetitem(ROOT.THStack, "GetHists")
 definegetitem(ROOT.TDirectory, "GetListOfKeys", furtheraction=lambda x: x.ReadObj())
 
 import getpass, socket
-if ("login-node" in socket.gethostname() or "compute" in socket.gethostname() or "bigmem" in socket.gethostname()) and getpass.getuser():
+if ("login-node" in socket.gethostname() or "compute" in socket.gethostname() or "bigmem" in socket.gethostname()) and getpass.getuser() == "jroskes1@jhu.edu":
     class __PlotCopier(object):
         import os, pipes, subprocess, tempfile
         def __init__(self):
